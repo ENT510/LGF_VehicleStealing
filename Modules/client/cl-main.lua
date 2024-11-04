@@ -185,11 +185,9 @@ function VehicleInteraction:attemptStealItems(vehicle)
     end
 
     if foundItem then
-        local Success = LGF:TriggerServerCallback("LGF_VehicleStealing.AddItemsRandom", selectedQuantity,
-            selectedItemName)
+        local Success = LGF:TriggerServerCallback("LGF_VehicleStealing.AddItemsRandom", selectedQuantity,selectedItemName)
         if Success then
-            Utils.notification("Success",
-                (Locales[CurrentLocale].stealSuccess):format(selectedQuantity, selectedItemName), "success")
+            Utils.notification("Success",(Locales[CurrentLocale].stealSuccess):format(selectedQuantity, selectedItemName), "success")
         end
     else
         Utils.notification("No Items", (Locales[CurrentLocale].stealFailure):format("items"), "warning")

@@ -1,7 +1,8 @@
 local Config = {}
-
+-- "en" or "it" or "fr" or "de" or add Custom in (Shared.locales.lua)
 Config.Locales = "en"
 
+-- "utility" or "ox_lib" or add custom Notification in (client.cl-utils.lua)
 Config.ProviderNotification = "utility"
 
 -- Start Forced With command /initsteal
@@ -12,12 +13,12 @@ Config.AllowedGroups = {
 }
 
 Config.StealedItem = {
-    [0] = {                                                                                  -- Compacts
+    [0] = {  -- Compacts
         RandomItems = {
             { ItemName = "water", QuantityMin = 1, QuantityMax = 3, ProbabilityDrop = 0.5 }, -- 50% chance
         }
     },
-    [1] = {                                                                                   -- Sedans
+    [1] = { -- Sedans
         RandomItems = {
             { ItemName = "water", QuantityMin = 1, QuantityMax = 5, ProbabilityDrop = 0.75 }, -- 75% chance
         }
@@ -44,7 +45,7 @@ Config.StealedItem = {
     },
     [6] = { -- Sports
         RandomItems = {
-            { ItemName = "water", QuantityMin = 1, QuantityMax = 4, ProbabilityDrop = 0.6 },
+            { ItemName = "water",  QuantityMin = 1, QuantityMax = 4, ProbabilityDrop = 0.6 },
             { ItemName = "burger", QuantityMin = 1, QuantityMax = 4, ProbabilityDrop = 0.6 },
         }
     },
