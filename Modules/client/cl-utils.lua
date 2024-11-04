@@ -1,9 +1,6 @@
 local Utils   = {}
 local Config  = LGF:LuaLoader("Shared/shared")
-
 local Context = LGF:GetContext()
-
-
 local RequestAnimDict = RequestAnimDict
 local HasAnimDictLoaded = HasAnimDictLoaded
 local Wait = Citizen.Wait
