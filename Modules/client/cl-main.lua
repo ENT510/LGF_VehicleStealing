@@ -134,9 +134,7 @@ function VehicleInteraction:createInteraction(vehicle, isTrunk)
                     local animData = isTrunk and Animation.boot or Animation.door
                     local prop = Utils.StartPlayerAnim(animData.Anim, animData.Dict, nil)
 
-                    if isTrunk then
-                        self:openTrunk(vehicle)
-                    end
+                    if isTrunk then self:openTrunk(vehicle) end
 
                     exports["LGF_Utility"]:CreateProgressBar({
                         message = isTrunk and Locales[CurrentLocale].stealingFromTrunk or
@@ -149,19 +147,7 @@ function VehicleInteraction:createInteraction(vehicle, isTrunk)
                             Utils.ClearPlayerAnim(prop, animData.Dict)
                             Entity(vehicle).state:set('stolenFrom', true)
 
-                            local vehicleClass = GetVehicleClass(vehicle)
-                            local itemsConfig = Config.StealedItem[vehicleClass]
-
-                            if itemsConfig and itemsConfig.RandomItems and #itemsConfig.RandomItems > 0 then
-                                local randomItem = itemsConfig.RandomItems[math.random(#itemsConfig.RandomItems)]
-                                local quantity = math.random(randomItem.QuantityMin, randomItem.QuantityMax)
-                                local Success = LGF:TriggerServerCallback("LGF_VehicleStealing.AddItemsRandom", quantity,
-                                    randomItem.ItemName)
-                                if Success then
-                                    print(string.format(Locales[CurrentLocale].stealSuccess, quantity,
-                                        randomItem.ItemName))
-                                end
-                            end
+                            self:attemptStealItems(vehicle)
 
                             if isTrunk then
                                 self:closeTrunk(vehicle)
@@ -177,6 +163,37 @@ function VehicleInteraction:createInteraction(vehicle, isTrunk)
         }
     })
     self.interactionCreated = true
+end
+
+function VehicleInteraction:attemptStealItems(vehicle)
+    local vehicleClass     = GetVehicleClass(vehicle)
+    local itemsConfig      = Config.StealedItem[vehicleClass]
+
+    local foundItem        = false
+    local selectedItemName = ""
+    local selectedQuantity = 0
+
+    if itemsConfig and itemsConfig.RandomItems and #itemsConfig.RandomItems > 0 then
+        for _, item in ipairs(itemsConfig.RandomItems) do
+            if math.random() <= item.ProbabilityDrop then
+                selectedItemName = item.ItemName
+                selectedQuantity = math.random(item.QuantityMin, item.QuantityMax)
+                foundItem = true
+                break
+            end
+        end
+    end
+
+    if foundItem then
+        local Success = LGF:TriggerServerCallback("LGF_VehicleStealing.AddItemsRandom", selectedQuantity,
+            selectedItemName)
+        if Success then
+            Utils.notification("Success",
+                (Locales[CurrentLocale].stealSuccess):format(selectedQuantity, selectedItemName), "success")
+        end
+    else
+        Utils.notification("No Items", (Locales[CurrentLocale].stealFailure):format("items"), "warning")
+    end
 end
 
 function VehicleInteraction:removeInteraction()
@@ -201,16 +218,10 @@ function VehicleInteraction:manageInteraction()
         local plate = self:getVehiclePlate(vehicle)
 
         local vehicleCoords = GetEntityCoords(vehicle)
-        local distance = #(playerCoords - vehicleCoords)
 
-        if distance > MAX_DISTANCE then
-            warn("NO.")
-            return
-        end
+        if #(playerCoords - vehicleCoords) > MAX_DISTANCE then warn("NO.") return end
 
-        if self.currentVehicleNetId == netId and self.currentVehiclePlate == plate then
-            return
-        end
+        if self.currentVehicleNetId == netId and self.currentVehiclePlate == plate then return end
 
         self.currentVehicleNetId = netId
         self.currentVehiclePlate = plate
@@ -234,26 +245,10 @@ function VehicleInteraction:manageInteraction()
     end
 end
 
-AddStateBagChangeHandler('stolenFrom', nil, function(bagName, key, value, _reserved, replicated)
-    if key == 'stolenFrom' and value then
-        local entity = GetEntityFromStateBagName(bagName)
-
-        if entity and entity ~= 0 and DoesEntityExist(entity) then
-            for _, vehicleInteraction in pairs(VehicleInteraction.instances) do
-                if vehicleInteraction.currentVehicleNetId == NetworkGetNetworkIdFromEntity(entity) then
-                    vehicleInteraction:removeInteraction()
-                end
-            end
-        else
-            warn(("entityId is invalid or does not exist for bagName: %s"):format(bagName))
-        end
-    end
-end)
-
 function VehicleInteraction:start()
     self.threadHandle = CreateThread(function()
         while stealInitialized do
-            Wait(1000)
+            Wait(500)
             self:manageInteraction()
         end
     end)
@@ -287,24 +282,31 @@ AddEventHandler("onResourceStop", function(resourceName)
 end)
 
 
-
-
 RegisterCommand("initsteal", function(source, args, rawCommand)
-    local PlayerGroup = LGF.Core:GetGroup()
-    if not Config.AllowedGroups[PlayerGroup] then
-        print("You are not allowed to execute this command.")
-        return
-    end
-
-    if stealInitialized then
-        print("Already Initialized")
-        return
-    end
-
+    if not Config.AllowedGroups[LGF.Core:GetGroup()] then return end
+    if stealInitialized then return end
     VehicleInteraction:InitializeStealing()
-    print("Vehicle stealing initialized.")
+    Utils.notification("Success", Locales[CurrentLocale].stealingStarted, "success")
 end)
 
-exports("isVehicleStolen", function(vehicle) 
-    return VehicleInteraction:isVehicleStolen(vehicle) 
+
+
+AddStateBagChangeHandler('stolenFrom', nil, function(bagName, key, value, _reserved, replicated)
+    if key == 'stolenFrom' and value then
+        local entity = GetEntityFromStateBagName(bagName)
+
+        if entity and entity ~= 0 and DoesEntityExist(entity) then
+            for _, vehicleInteraction in pairs(VehicleInteraction.instances) do
+                if vehicleInteraction.currentVehicleNetId == NetworkGetNetworkIdFromEntity(entity) then
+                    vehicleInteraction:removeInteraction()
+                end
+            end
+        else
+            warn(("entityId is invalid or does not exist for bagName: %s"):format(bagName))
+        end
+    end
+end)
+
+exports("isVehicleStolen", function(vehicle)
+    return VehicleInteraction:isVehicleStolen(vehicle)
 end)

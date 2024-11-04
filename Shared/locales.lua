@@ -6,7 +6,9 @@ return {
         attemptStealDoor = "Attempt to steal items from the vehicle's door.",
         stealingFromTrunk = "Stealing from trunk...",
         stealingFromDoor = "Stealing from door...",
-        stealSuccess = "You stole %d %s(s) from the vehicle."
+        stealSuccess = "You stole %d %s(s) from the vehicle.",
+        stealFailure = "You didn't find anything useful from the vehicle: %s.",
+        stealingStarted = "Vehicle Stealing Started Successfully.",
     },
     it = {
         stealFromTrunk = "Ruba dal bagagliaio",
@@ -15,7 +17,9 @@ return {
         attemptStealDoor = "Tentativo di rubare oggetti dalla porta del veicolo.",
         stealingFromTrunk = "Rubando dal bagagliaio...",
         stealingFromDoor = "Rubando dalla porta...",
-        stealSuccess = "Hai rubato %d %s(i) dal veicolo."
+        stealSuccess = "Hai rubato %d %s(i) dal veicolo.",
+        stealFailure = "Non hai trovato nulla di utile nel veicolo: %s.",
+        stealingStarted = "Sequenza di furto del veicolo avviata con successo.",  
     },
     fr = {
         stealFromTrunk = "Voler dans le coffre",
@@ -24,7 +28,9 @@ return {
         attemptStealDoor = "Tentative de voler des objets dans la porte du véhicule.",
         stealingFromTrunk = "Vol dans le coffre...",
         stealingFromDoor = "Vol dans la porte...",
-        stealSuccess = "Vous avez volé %d %s(s) dans le véhicule."
+        stealSuccess = "Vous avez volé %d %s(s) dans le véhicule.",
+        stealFailure = "Vous n'avez rien trouvé d'utile dans le véhicule: %s.",
+        stealingStarted = "Séquence de vol de véhicule lancée avec succès.",
     },
     de = {
         stealFromTrunk = "Aus dem Kofferraum stehlen",
@@ -33,6 +39,8 @@ return {
         attemptStealDoor = "Versuch, Gegenstände aus der Tür des Fahrzeugs zu stehlen.",
         stealingFromTrunk = "Stehlen aus dem Kofferraum...",
         stealingFromDoor = "Stehlen aus der Tür...",
-        stealSuccess = "Du hast %d %s(e) aus dem Fahrzeug gestohlen."
+        stealSuccess = "Du hast %d %s(e) aus dem Fahrzeug gestohlen.",
+        stealFailure = "Du hast nichts Nützliches im Fahrzeug gefunden: %s.",
+        stealingStarted = "Fahrzeugdiebstahl erfolgreich gestartet.", 
     }
 }
